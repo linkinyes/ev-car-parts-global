@@ -1,0 +1,95 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "parts": "Tienda de Repuestos",
+    "vehicles": "Concesionario",
+    "news": "Noticias VE",
+    "community": "Comunidad",
+    "evSchool": "Escuela VE",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "profile": "Perfil"
+  },
+  "home": {
+    "title": "Plataforma Global de Comercio de Repuestos para Vehículos Eléctricos",
+    "subtitle": "Conectando los Mercados Globales de Vehículos Eléctricos",
+    "searchPlaceholder": "Ingrese palabras clave para buscar repuestos o vehículos...",
+    "aiSearch": "Búsqueda Inteligente con IA",
+    "uploadImage": "Subir imagen para reconocimiento",
+    "features": {
+      "partsStore": "Tienda de Repuestos",
+      "partsStoreDesc": "Rica oferta de repuestos para vehículos eléctricos",
+      "vehicleStore": "Concesionario",
+      "vehicleStoreDesc": "Plataforma de comercio de autos nuevos y usados",
+      "news": "Centro de Noticias",
+      "newsDesc": "Últimas noticias de vehículos eléctricos",
+      "community": "Comunidad de Usuarios",
+      "communityDesc": "Comparte experiencias e ideas"
+    }
+  },
+  "auth": {
+    "register": "Registro de Usuario",
+    "login": "Inicio de Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "country": "País",
+    "phone": "Teléfono",
+    "whatsapp": "WhatsApp",
+    "ownedVehicles": "Vehículos Propios",
+    "interestedVehicles": "Vehículos de Interés",
+    "wholesaleRegister": "Registro de Mayorista",
+    "contactSupport": "Contactar Soporte",
+    "regularUser": "Usuario Regular",
+    "wholesaleCustomer": "Cliente Mayorista"
+  },
+  "parts": {
+    "title": "Tienda de Repuestos",
+    "search": "Búsqueda de Repuestos",
+    "vinSearch": "Búsqueda por VIN",
+    "partNumberSearch": "Búsqueda por Número de Pieza",
+    "brandSearch": "Búsqueda por Marca y Modelo",
+    "imageSearch": "Búsqueda por Imagen",
+    "gallery": "Galería de Repuestos",
+    "partNumber": "Número de Pieza",
+    "universalPartNumber": "Número de Pieza Universal",
+    "applicableVehicles": "Vehículos Aplicables",
+    "quality": {
+      "original": "Original",
+      "aftermarket": "Calidad de Posventa",
+      "oem": "Calidad OEM"
+    },
+    "retailPrice": "Precio al Detalle",
+    "wholesalePrice": "Precio Mayorista",
+    "shipping": "Envío no incluido"
+  },
+  "vehicles": {
+    "title": "Concesionario",
+    "newCars": "Autos Nuevos",
+    "usedCars": "Autos Usados",
+    "search": "Búsqueda de Vehículos",
+    "compare": "Comparar Vehículos",
+    "brand": "Marca",
+    "year": "Año",
+    "model": "Modelo",
+    "range": "Autonomía",
+    "displacement": "Cilindrada"
+  },
+  "common": {
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "price": "Precio",
+    "brand": "Marca",
+    "year": "Año",
+    "model": "Modelo",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "navigation": {
+    "home": "الرئيسية",
+    "parts": "متجر قطع الغيار",
+    "vehicles": "متجر السيارات",
+    "news": "أخبار السيارات الكهربائية",
+    "community": "المجتمع",
+    "evSchool": "مدرسة السيارات الكهربائية",
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "profile": "الملف الشخصي"
+  },
+  "home": {
+    "title": "منصة تجارة قطع غيار السيارات الكهربائية العالمية",
+    "subtitle": "ربط أسواق السيارات الكهربائية العالمية",
+    "searchPlaceholder": "أدخل كلمات مفتاحية للبحث عن قطع الغيار أو السيارات...",
+    "aiSearch": "البحث الذكي بالذكاء الاصطناعي",
+    "uploadImage": "رفع صورة للتعرف عليها",
+    "features": {
+      "partsStore": "متجر قطع الغيار",
+      "partsStoreDesc": "مجموعة غنية من قطع غيار السيارات الكهربائية",
+      "vehicleStore": "متجر السيارات",
+      "vehicleStoreDesc": "منصة تجارة السيارات الجديدة والمستعملة",
+      "news": "مركز الأخبار",
+      "newsDesc": "أحدث أخبار السيارات الكهربائية",
+      "community": "مجتمع المستخدمين",
+      "communityDesc": "مشاركة التجارب والأفكار"
+    }
+  },
+  "auth": {
+    "register": "تسجيل المستخدم",
+    "login": "تسجيل دخول المستخدم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "country": "البلد",
+    "phone": "الهاتف",
+    "whatsapp": "واتساب",
+    "ownedVehicles": "السيارات المملوكة",
+    "interestedVehicles": "السيارات التي تهمك",
+    "wholesaleRegister": "تسجيل تاجر الجملة",
+    "contactSupport": "اتصل بالدعم",
+    "regularUser": "مستخدم عادي",
+    "wholesaleCustomer": "عميل جملة"
+  },
+  "parts": {
+    "title": "متجر قطع الغيار",
+    "search": "البحث عن قطع الغيار",
+    "vinSearch": "البحث برقم VIN",
+    "partNumberSearch": "البحث برقم القطعة",
+    "brandSearch": "البحث بالعلامة التجارية والموديل",
+    "imageSearch": "البحث بالصورة",
+    "gallery": "معرض قطع الغيار",
+    "partNumber": "رقم القطعة",
+    "universalPartNumber": "رقم القطعة العام",
+    "applicableVehicles": "السيارات المطبقة",
+    "quality": {
+      "original": "أصلي",
+      "aftermarket": "جودة السوق الثانوية",
+      "oem": "جودة OEM"
+    },
+    "retailPrice": "سعر التجزئة",
+    "wholesalePrice": "سعر الجملة",
+    "shipping": "الشحن غير مشمول"
+  },
+  "vehicles": {
+    "title": "متجر السيارات",
+    "newCars": "السيارات الجديدة",
+    "usedCars": "السيارات المستعملة",
+    "search": "البحث عن السيارات",
+    "compare": "مقارنة السيارات",
+    "brand": "العلامة التجارية",
+    "year": "السنة",
+    "model": "الموديل",
+    "range": "المدى",
+    "displacement": "الإزاحة"
+  },
+  "common": {
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "price": "السعر",
+    "brand": "العلامة التجارية",
+    "year": "السنة",
+    "model": "الموديل",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "edit": "تحرير",
+    "delete": "حذف",
+    "view": "عرض",
+    "loading": "جاري التحميل...",
+    "noResults": "لا توجد نتائج"
+  }
+}

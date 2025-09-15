@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EV Car Parts Global - 新能源汽车零件全球交易平台
 
-## Getting Started
+## 项目概述
+一个专注于新能源汽车零件交易的全球化平台，支持零件商店、汽车展厅、资讯发布、用户社群等核心功能。
 
-First, run the development server:
+## 技术栈
+- **前端**: Next.js 15 + React 19 + TypeScript + Tailwind CSS
+- **部署**: Vercel
+- **开发工具**: ESLint + Turbopack
 
+## 核心功能
+- 🔧 零件商店 (VIN码查询、零件号查询、图片识别)
+- 🚗 汽车商店 (新车/二手车展厅)
+- 📰 EV资讯模块
+- 👥 用户社群
+- 🎓 EV课堂
+- 👤 用户中心
+- 💬 客服功能
+- 🛠️ 管理后台
+- 🌍 多语言支持 (中文、英文、阿拉伯语、俄语、西班牙语、葡萄牙语)
+
+## 快速开始
+
+### 安装依赖
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 开发环境
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 构建生产版本
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 启动生产服务器
+```bash
+npm start
+```
 
-## Learn More
+## 部署说明
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel部署
+1. 连接GitHub仓库
+2. 配置环境变量
+3. 一键部署
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 环境变量配置
+参考 `.env.production` 文件配置以下环境变量：
+- 数据库连接
+- 认证密钥
+- 邮件服务
+- 文件上传配置
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 联系方式
+- 📧 邮箱: linkinyes@gmail.com
+- 📱 客服热线: +86 19866695358
+- 💬 WhatsApp: +8619866695358
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 许可证
+MIT License

@@ -1,0 +1,95 @@
+{
+  "navigation": {
+    "home": "Início",
+    "parts": "Loja de Peças",
+    "vehicles": "Concessionária",
+    "news": "Notícias VE",
+    "community": "Comunidade",
+    "evSchool": "Escola VE",
+    "login": "Entrar",
+    "register": "Registrar",
+    "profile": "Perfil"
+  },
+  "home": {
+    "title": "Plataforma Global de Comércio de Peças para Veículos Elétricos",
+    "subtitle": "Conectando Mercados Globais de Veículos Elétricos",
+    "searchPlaceholder": "Digite palavras-chave para buscar peças ou veículos...",
+    "aiSearch": "Busca Inteligente com IA",
+    "uploadImage": "Enviar imagem para reconhecimento",
+    "features": {
+      "partsStore": "Loja de Peças",
+      "partsStoreDesc": "Rica oferta de peças para veículos elétricos",
+      "vehicleStore": "Concessionária",
+      "vehicleStoreDesc": "Plataforma de comércio de carros novos e usados",
+      "news": "Centro de Notícias",
+      "newsDesc": "Últimas notícias de veículos elétricos",
+      "community": "Comunidade de Usuários",
+      "communityDesc": "Compartilhe experiências e ideias"
+    }
+  },
+  "auth": {
+    "register": "Registro de Usuário",
+    "login": "Login do Usuário",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "country": "País",
+    "phone": "Telefone",
+    "whatsapp": "WhatsApp",
+    "ownedVehicles": "Veículos Próprios",
+    "interestedVehicles": "Veículos de Interesse",
+    "wholesaleRegister": "Registro de Atacadista",
+    "contactSupport": "Contactar Suporte",
+    "regularUser": "Usuário Regular",
+    "wholesaleCustomer": "Cliente Atacadista"
+  },
+  "parts": {
+    "title": "Loja de Peças",
+    "search": "Busca de Peças",
+    "vinSearch": "Busca por VIN",
+    "partNumberSearch": "Busca por Número da Peça",
+    "brandSearch": "Busca por Marca e Modelo",
+    "imageSearch": "Busca por Imagem",
+    "gallery": "Galeria de Peças",
+    "partNumber": "Número da Peça",
+    "universalPartNumber": "Número Universal da Peça",
+    "applicableVehicles": "Veículos Aplicáveis",
+    "quality": {
+      "original": "Original",
+      "aftermarket": "Qualidade Pós-Venda",
+      "oem": "Qualidade OEM"
+    },
+    "retailPrice": "Preço de Varejo",
+    "wholesalePrice": "Preço Atacado",
+    "shipping": "Frete não incluído"
+  },
+  "vehicles": {
+    "title": "Concessionária",
+    "newCars": "Carros Novos",
+    "usedCars": "Carros Usados",
+    "search": "Busca de Veículos",
+    "compare": "Comparar Veículos",
+    "brand": "Marca",
+    "year": "Ano",
+    "model": "Modelo",
+    "range": "Autonomia",
+    "displacement": "Cilindrada"
+  },
+  "common": {
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "price": "Preço",
+    "brand": "Marca",
+    "year": "Ano",
+    "model": "Modelo",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "view": "Visualizar",
+    "loading": "Carregando...",
+    "noResults": "Nenhum resultado encontrado"
+  }
+}

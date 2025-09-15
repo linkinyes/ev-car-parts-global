@@ -1,0 +1,95 @@
+{
+  "navigation": {
+    "home": "首页",
+    "parts": "零件商店",
+    "vehicles": "汽车商店",
+    "news": "新能源资讯",
+    "community": "社群",
+    "evSchool": "EV课堂",
+    "login": "登录",
+    "register": "注册",
+    "profile": "个人中心"
+  },
+  "home": {
+    "title": "新能源汽车和零件全球交易平台",
+    "subtitle": "连接全球新能源汽车市场",
+    "searchPlaceholder": "输入关键词搜索零件或车型...",
+    "aiSearch": "AI智能搜索",
+    "uploadImage": "上传图片识别",
+    "features": {
+      "partsStore": "零件商店",
+      "partsStoreDesc": "丰富的新能源汽车零件供应",
+      "vehicleStore": "汽车商店", 
+      "vehicleStoreDesc": "新车和二手车交易平台",
+      "news": "资讯中心",
+      "newsDesc": "最新新能源汽车资讯",
+      "community": "用户社群",
+      "communityDesc": "分享经验，交流心得"
+    }
+  },
+  "auth": {
+    "register": "用户注册",
+    "login": "用户登录",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "country": "国家",
+    "phone": "电话",
+    "whatsapp": "WhatsApp",
+    "ownedVehicles": "已有车型",
+    "interestedVehicles": "感兴趣车型",
+    "wholesaleRegister": "批发商注册",
+    "contactSupport": "联系客服",
+    "regularUser": "普通用户",
+    "wholesaleCustomer": "批发客户"
+  },
+  "parts": {
+    "title": "零件商店",
+    "search": "零件搜索",
+    "vinSearch": "VIN码查询",
+    "partNumberSearch": "零件号查询",
+    "brandSearch": "品牌车型查询",
+    "imageSearch": "图片搜索",
+    "gallery": "零件展厅",
+    "partNumber": "零件号",
+    "universalPartNumber": "通用零件号",
+    "applicableVehicles": "适用车型",
+    "quality": {
+      "original": "原厂",
+      "aftermarket": "售后市场品质",
+      "oem": "OEM品质"
+    },
+    "retailPrice": "零售价",
+    "wholesalePrice": "批发价",
+    "shipping": "运费另计"
+  },
+  "vehicles": {
+    "title": "汽车商店",
+    "newCars": "新车展厅",
+    "usedCars": "二手车展厅",
+    "search": "车型搜索",
+    "compare": "车型对比",
+    "brand": "品牌",
+    "year": "年份",
+    "model": "型号",
+    "range": "续航里程",
+    "displacement": "排量"
+  },
+  "common": {
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "price": "价格",
+    "brand": "品牌",
+    "year": "年份",
+    "model": "型号",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "view": "查看",
+    "loading": "加载中...",
+    "noResults": "暂无结果"
+  }
+}

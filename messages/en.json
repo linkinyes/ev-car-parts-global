@@ -1,0 +1,95 @@
+{
+  "navigation": {
+    "home": "Home",
+    "parts": "Parts Store",
+    "vehicles": "Vehicle Store", 
+    "news": "EV News",
+    "community": "Community",
+    "evSchool": "EV School",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile"
+  },
+  "home": {
+    "title": "Global EV Car Parts Trading Platform",
+    "subtitle": "Connecting Global Electric Vehicle Markets",
+    "searchPlaceholder": "Enter keywords to search parts or vehicles...",
+    "aiSearch": "AI Smart Search",
+    "uploadImage": "Upload Image for Recognition",
+    "features": {
+      "partsStore": "Parts Store",
+      "partsStoreDesc": "Rich supply of EV car parts",
+      "vehicleStore": "Vehicle Store",
+      "vehicleStoreDesc": "New and used car trading platform",
+      "news": "News Center",
+      "newsDesc": "Latest EV automotive news",
+      "community": "User Community",
+      "communityDesc": "Share experiences and insights"
+    }
+  },
+  "auth": {
+    "register": "User Registration",
+    "login": "User Login",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "country": "Country",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "ownedVehicles": "Owned Vehicles",
+    "interestedVehicles": "Interested Vehicles",
+    "wholesaleRegister": "Wholesale Registration",
+    "contactSupport": "Contact Support",
+    "regularUser": "Regular User",
+    "wholesaleCustomer": "Wholesale Customer"
+  },
+  "parts": {
+    "title": "Parts Store",
+    "search": "Parts Search",
+    "vinSearch": "VIN Search",
+    "partNumberSearch": "Part Number Search", 
+    "brandSearch": "Brand & Model Search",
+    "imageSearch": "Image Search",
+    "gallery": "Parts Gallery",
+    "partNumber": "Part Number",
+    "universalPartNumber": "Universal Part Number",
+    "applicableVehicles": "Applicable Vehicles",
+    "quality": {
+      "original": "Original",
+      "aftermarket": "Aftermarket Quality",
+      "oem": "OEM Quality"
+    },
+    "retailPrice": "Retail Price",
+    "wholesalePrice": "Wholesale Price",
+    "shipping": "Shipping not included"
+  },
+  "vehicles": {
+    "title": "Vehicle Store",
+    "newCars": "New Cars",
+    "usedCars": "Used Cars",
+    "search": "Vehicle Search",
+    "compare": "Vehicle Compare",
+    "brand": "Brand",
+    "year": "Year",
+    "model": "Model", 
+    "range": "Range",
+    "displacement": "Displacement"
+  },
+  "common": {
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "price": "Price",
+    "brand": "Brand",
+    "year": "Year",
+    "model": "Model",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  }
+}
