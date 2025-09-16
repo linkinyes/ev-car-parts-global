@@ -1,9 +1,9 @@
-'use client';
-
 import React from 'react';
 import Navigation from '../../components/Navigation';
+import { headers } from 'next/headers';
+import { Suspense } from 'react';
 
-export default function ReturnsPage() {
+function ReturnsContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -126,5 +126,13 @@ export default function ReturnsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ReturnsPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <ReturnsContent />
+    </Suspense>
   );
 }

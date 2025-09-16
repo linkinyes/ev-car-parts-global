@@ -1,295 +1,225 @@
-import Link from "next/link";
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import Navigation from '../components/Navigation';
-import { imageMap } from '../lib/images';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { productManager } from '@/lib/products';
+import { logSearch } from '@/lib/analytics';
+import CustomerService from '@/components/CustomerService';
 
 export default function Home() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 加载热门产品
+    const popularProducts = productManager.getPopularProducts(10);
+    setProducts(popularProducts);
+    setLoading(false);
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // 记录搜索事件
+      logSearch(searchQuery);
+      
+      // 根据搜索内容决定跳转到零件页面还是汽车页面
+      // 这里简化处理，实际项目中可以根据搜索内容智能判断
+      router.push(`/parts?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleProductClick = (product: any) => {
+    if (product.type === 'part') {
+      router.push(`/parts/${product.id}`);
+    } else {
+      router.push(`/vehicles/${product.id}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <Navigation />
-
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-green-50 to-blue-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative bg-gradient-to-r from-green-600 to-blue-600 text-white">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              新能源汽车和零件
-              <br />
-              <span className="text-green-600">全球交易平台</span>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+              <span className="block">新能源汽车和零件</span>
+              <span className="block mt-2 text-green-300">全球交易平台</span>
             </h1>
-            <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-              连接全球新能源汽车市场，为全球新能源用户提供零件交易、汽车销售、资讯分享等一站式服务
+            <p className="mt-6 max-w-lg mx-auto text-xl text-green-100 sm:max-w-3xl">
+              连接全球新能源汽车产业链，提供高品质零件和整车资源
             </p>
             
-            {/* Search Section */}
-            <div className="max-w-3xl mx-auto mb-6">
-              <div className="bg-white rounded-lg shadow-lg p-4">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">AI智能搜索</h2>
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="输入关键词搜索零件或车型..."
-                        className="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      />
-                      <MagnifyingGlassIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    </div>
-                  </div>
-                  <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
-                    搜索
-                  </button>
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="mt-10 max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="输入VIN码、零件号、品牌或车型..."
+                    className="w-full px-5 py-3 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
                 </div>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                >
+                  搜索
+                </button>
               </div>
+            </form>
+            
+            {/* Quick Links */}
+            <div className="mt-12 flex flex-wrap justify-center gap-4">
+              <Link href="/parts" className="px-4 py-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-colors">
+                零件商店
+              </Link>
+              <Link href="/vehicles" className="px-4 py-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-colors">
+                汽车展厅
+              </Link>
+              <Link href="/news" className="px-4 py-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-colors">
+                EV资讯
+              </Link>
+              <Link href="/community" className="px-4 py-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-colors">
+                用户社群
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 5-Column Grid Section */}
-      <div className="py-8">
+      {/* Features Section */}
+      <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-5 gap-4">
-            {/* 第1列 - 零件 A */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">热门零件</h3>
-              {[
-                { title: '电池组', price: '￥1,299', image: imageMap.parts['battery-pack'], discount: '8.5折' },
-                { title: '电机控制器', price: '￥899', image: imageMap.parts['motor-controller'] },
-                { title: '充电枪', price: '￥299', image: imageMap.parts['charging-gun'], hot: true },
-                { title: '电控系统', price: '￥2,199', image: imageMap.parts['control-system'] },
-                { title: '驱动电机', price: '￥3,999', image: imageMap.parts['drive-motor'], discount: '9折' }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative">
-                    <img src={item.image} alt={item.title} className="w-full h-32 object-cover" />
-                    {item.discount && (
-                      <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                        {item.discount}
-                      </span>
-                    )}
-                    {item.hot && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
-                        热销
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium text-sm text-gray-900 mb-1">{item.title}</h4>
-                    <p className="text-green-600 font-semibold text-sm">{item.price}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* 第2列 - 零件 B */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">精选配件</h3>
-              {[
-                { title: 'BMS管理系统', price: '￥799', image: imageMap.parts['bms-system'] },
-                { title: '车载充电器', price: '￥499', image: imageMap.parts['onboard-charger'], hot: true },
-                { title: '电机控制器', price: '￥1,599', image: imageMap.parts['motor-controller'] },
-                { title: '高压电缆', price: '￥199', image: imageMap.parts['high-voltage-cable'], discount: '7.5折' },
-                { title: '热管理系统', price: '￥1,299', image: imageMap.parts['thermal-management'] }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative">
-                    <img src={item.image} alt={item.title} className="w-full h-32 object-cover" />
-                    {item.discount && (
-                      <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                        {item.discount}
-                      </span>
-                    )}
-                    {item.hot && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
-                        热销
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium text-sm text-gray-900 mb-1">{item.title}</h4>
-                    <p className="text-green-600 font-semibold text-sm">{item.price}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* 第3列 - 汽车 A */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">热门车型</h3>
-              {[
-                { title: 'Tesla Model 3', price: '￥29.9万', image: imageMap.vehicles['tesla-model3'], type: '新车' },
-                { title: '比亚迪汉EV', price: '￥18.5万', image: imageMap.vehicles['byd-han-ev'], type: '二手' },
-                { title: '蔚来ET7', price: '￥32.8万', image: imageMap.vehicles['nio-et7'], type: '新车', hot: true },
-                { title: '小鹏P7', price: '￥25.2万', image: imageMap.vehicles['xpeng-p7'], type: '二手' },
-                { title: '理想L9', price: '￥45.9万', image: imageMap.vehicles['li-l9'], type: '新车' }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative">
-                    <img src={item.image} alt={item.title} className="w-full h-24 object-cover" />
-                    <span className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded ${
-                      item.type === '新车' ? 'bg-blue-500' : 'bg-gray-500'
-                    }`}>
-                      {item.type}
-                    </span>
-                    {item.hot && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
-                        热销
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium text-sm text-gray-900 mb-1">{item.title}</h4>
-                    <p className="text-blue-600 font-semibold text-sm">{item.price}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* 第4列 - 汽车 B */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">精选车源</h3>
-              {[
-                { title: '极氪001', price: '￥28.6万', image: imageMap.vehicles['zeekr-001'], type: '新车' },
-                { title: 'Model Y', price: '￥33.9万', image: imageMap.vehicles['tesla-model-y'], type: '新车', hot: true },
-                { title: '小鹏G3', price: '￥15.8万', image: imageMap.vehicles['xpeng-g3'], type: '二手' },
-                { title: '哪吒GT', price: '￥35.8万', image: imageMap.vehicles['neta-gt'], type: '新车' },
-                { title: '红旗E-HS9', price: '￥41.2万', image: imageMap.vehicles['hongqi-ehs9'], type: '二手' }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative">
-                    <img src={item.image} alt={item.title} className="w-full h-24 object-cover" />
-                    <span className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded ${
-                      item.type === '新车' ? 'bg-blue-500' : 'bg-gray-500'
-                    }`}>
-                      {item.type}
-                    </span>
-                    {item.hot && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
-                        热销
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium text-sm text-gray-900 mb-1">{item.title}</h4>
-                    <p className="text-blue-600 font-semibold text-sm">{item.price}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* 第5列 - 资讯 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">EV 资讯</h3>
-              {[
-                { title: '2024年电动汽车市场分析报告', image: imageMap.news['ev-market-2024'], time: '2小时前', views: '2.1k' },
-                { title: '特斯拉新技术突破：电池续航提升30%', image: imageMap.news['tesla-battery-tech'], time: '5小时前', views: '3.8k', hot: true },
-                { title: '中国新能源汽车出口量再创新高', image: imageMap.news['china-ev-export'], time: '8小时前', views: '1.5k' },
-                { title: '充电基础设施建设的最新进展', image: imageMap.news['charging-infrastructure'], time: '12小时前', views: '982' },
-                { title: 'EV维修保养指南：如何延长电池寿命', image: imageMap.news['ev-maintenance-guide'], time: '1天前', views: '2.3k' }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative">
-                    <img src={item.image} alt={item.title} className="w-full h-24 object-cover" />
-                    {item.hot && (
-                      <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                        热门
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium text-xs text-gray-900 mb-2 line-clamp-2 leading-tight">{item.title}</h4>
-                    <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>{item.time}</span>
-                      <span>{item.views} 阅读</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              平台特色
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+              为您提供全方位的新能源汽车服务
+            </p>
           </div>
-        </div>
-      </div>
 
-      {/* CTA Section */}
-      <div className="bg-green-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            加入我们，开启新能源汽车之旅
-          </h2>
-          <p className="text-xl text-green-100 mb-8">
-            马上注册，享受专业的新能源汽车和零件服务
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="bg-white text-green-600 hover:bg-gray-50 px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
-              立即注册
-            </Link>
-            <Link
-              href="/parts"
-              className="bg-green-700 text-white hover:bg-green-800 px-8 py-3 rounded-lg font-semibold transition-colors"
-            >
-              浏览零件
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center mb-4">
-                <div className="h-8 w-8 bg-green-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">EV</span>
-                </div>
-                <span className="ml-2 text-xl font-semibold">Car Parts Global</span>
+          <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="text-center">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white mx-auto">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-              <p className="text-gray-400">
-                全球领先的新能源汽车和零件交易平台
+              <h3 className="mt-5 text-lg font-medium text-gray-900">智能搜索</h3>
+              <p className="mt-2 text-base text-gray-500">
+                支持VIN码、零件号、图片识别等多种搜索方式
               </p>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">产品服务</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/parts" className="hover:text-white">零件商店</Link></li>
-                <li><Link href="/vehicles" className="hover:text-white">汽车商店</Link></li>
-                <li><Link href="/news" className="hover:text-white">资讯中心</Link></li>
-                <li><Link href="/community" className="hover:text-white">用户社群</Link></li>
-              </ul>
+
+            <div className="text-center">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white mx-auto">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+              </div>
+              <h3 className="mt-5 text-lg font-medium text-gray-900">全球资源</h3>
+              <p className="mt-2 text-base text-gray-500">
+                汇聚全球优质新能源汽车和零件供应商
+              </p>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">帮助中心</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/help" className="hover:text-white">常见问题</Link></li>
-                <li><Link href="/contact" className="hover:text-white">联系我们</Link></li>
-                <li><Link href="/wholesale" className="hover:text-white">批发商入驻</Link></li>
-                <li><Link href="/ev-school" className="hover:text-white">EV课堂</Link></li>
-              </ul>
+
+            <div className="text-center">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white mx-auto">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="mt-5 text-lg font-medium text-gray-900">品质保障</h3>
+              <p className="mt-2 text-base text-gray-500">
+                严格的质量控制体系，确保每一件商品的品质
+              </p>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">联系方式</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>邮箱：linkinyes@gmail.com</li>
-                <li>客服热线：+86 19866695358</li>
-                <li>WhatsApp：+8619866695358</li>
-              </ul>
+
+            <div className="text-center">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white mx-auto">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <h3 className="mt-5 text-lg font-medium text-gray-900">便捷支付</h3>
+              <p className="mt-2 text-base text-gray-500">
+                支持多种支付方式，安全快捷的交易体验
+              </p>
             </div>
-          </div>
-          
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 EV Car Parts Global. 版权所有。</p>
           </div>
         </div>
-      </footer>
+      </div>
+
+      {/* Products Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              热门推荐
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+              精选优质新能源汽车和零件
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="mt-12 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            </div>
+          ) : (
+            <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {products.map((product) => (
+                <div 
+                  key={product.id} 
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
+                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">{product.name}</h3>
+                    <p className="mt-1 text-sm text-gray-500">{product.brand}</p>
+                    <p className="mt-2 text-sm font-medium text-green-600">
+                      {product.type === 'part' 
+                        ? `${product.price?.toFixed(2) || '面议'} USD` 
+                        : `${product.price?.toFixed(2) || '面议'} USD`}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-12 text-center">
+            <Link 
+              href="/parts" 
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+            >
+              查看更多产品
+              <svg className="ml-2 -mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Customer Service */}
+      <CustomerService />
     </div>
   );
 }

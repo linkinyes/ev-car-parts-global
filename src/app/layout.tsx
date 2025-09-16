@@ -1,42 +1,57 @@
+import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
+import AnalyticsProvider from '@/components/AnalyticsProvider';
+import { Suspense } from 'react';
+import Loading from './loading';
+import SecurityBanner from '@/components/SecurityBanner';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// 更新metadata以包含安全相关的meta标签
 export const metadata: Metadata = {
-  title: 'EV Car Parts Global - 新能源汽车零件全球交易平台',
-  description: '专业的新能源汽车零件交易平台，提供全球新能源汽车零件供应、汽车展厅、技术资讯和用户社群服务',
-  keywords: '新能源汽车,电动汽车零件,EV零件,汽车配件,电池,充电器,电机',
+  title: 'EV Car Parts Global - 新能源汽车和零件全球交易平台',
+  description: '全球最大的新能源汽车和零件交易平台，提供VIN码查询、零件号查询、品牌车型查询、图片识别等多种搜索方式',
+  keywords: ['新能源汽车', '电动汽车', '汽车零件', 'EV Parts', 'VIN查询', '零件号查询'],
   authors: [{ name: 'EV Car Parts Global' }],
   creator: 'EV Car Parts Global',
   publisher: 'EV Car Parts Global',
-  robots: 'index, follow',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    }
+  },
+  alternates: {
+    canonical: 'https://www.evcarpartsglobal.com'
+  },
   openGraph: {
-    title: 'EV Car Parts Global - 新能源汽车零件全球交易平台',
-    description: '专业的新能源汽车零件交易平台，服务全球新能源用户',
-    url: 'https://your-domain.com',
+    title: 'EV Car Parts Global - 新能源汽车和零件全球交易平台',
+    description: '全球最大的新能源汽车和零件交易平台，提供VIN码查询、零件号查询、品牌车型查询、图片识别等多种搜索方式',
+    url: 'https://www.evcarpartsglobal.com',
     siteName: 'EV Car Parts Global',
     images: [
       {
-        url: '/og-image.jpg',
+        url: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200',
         width: 1200,
         height: 630,
-        alt: 'EV Car Parts Global',
-      },
+        alt: 'EV Car Parts Global Platform'
+      }
     ],
     locale: 'zh_CN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EV Car Parts Global - 新能源汽车零件全球交易平台',
-    description: '专业的新能源汽车零件交易平台，服务全球新能源用户',
-    images: ['/og-image.jpg'],
-  },
-  verification: {
-    google: 'your-google-verification-code',
-  },
+    title: 'EV Car Parts Global - 新能源汽车和零件全球交易平台',
+    description: '全球最大的新能源汽车和零件交易平台，提供VIN码查询、零件号查询、品牌车型查询、图片识别等多种搜索方式',
+    images: ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200'],
+  }
 };
 
 export default function RootLayout({
@@ -45,12 +60,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh">
+    <html lang="zh-CN">
       <head>
+        {/* 安全相关的meta标签 */}
+        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        
         {/* Google Analytics */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || 'G-XXXXXXXXXX'}`}
         />
         <script
           dangerouslySetInnerHTML={{
@@ -58,7 +79,9 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'GA_MEASUREMENT_ID');
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || 'G-XXXXXXXXXX'}', {
+                page_path: window.location.pathname,
+              });
             `,
           }}
         />
@@ -69,42 +92,29 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": "WebSite",
               "name": "EV Car Parts Global",
-              "description": "专业的新能源汽车零件交易平台",
-              "url": "https://your-domain.com",
-              "logo": "https://your-domain.com/logo.png",
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+86-19866695358",
-                "contactType": "customer service",
-                "email": "linkinyes@gmail.com"
-              },
-              "sameAs": [
-                "https://www.facebook.com/your-page",
-                "https://www.linkedin.com/company/your-company"
-              ]
-            }),
+              "url": "https://www.evcarpartsglobal.com",
+              "description": "全球最大的新能源汽车和零件交易平台",
+              "publisher": {
+                "@type": "Organization",
+                "name": "EV Car Parts Global",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://www.evcarpartsglobal.com/logo.png"
+                }
+              }
+            })
           }}
         />
       </head>
       <body className={inter.className}>
-        {children}
-        
-        {/* 百度统计 */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              var _hmt = _hmt || [];
-              (function() {
-                var hm = document.createElement("script");
-                hm.src = "https://hm.baidu.com/hm.js?YOUR_BAIDU_ANALYTICS_ID";
-                var s = document.getElementsByTagName("script")[0]; 
-                s.parentNode.insertBefore(hm, s);
-              })();
-            `,
-          }}
-        />
+        <SecurityBanner />
+        <AnalyticsProvider>
+          <Suspense fallback={<Loading />}>
+            {children}
+          </Suspense>
+        </AnalyticsProvider>
       </body>
     </html>
   );

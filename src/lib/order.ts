@@ -79,6 +79,9 @@ export interface PaymentResponse {
   error?: string;
 }
 
+// 导入支付网关
+import { paymentGateway } from './payment';
+
 // 订单管理器
 class OrderManager {
   private orders: Order[] = [];
@@ -151,13 +154,13 @@ class OrderManager {
 
       switch (paymentRequest.paymentMethod) {
         case 'alipay':
-          paymentResponse = await this.processAlipayPayment(paymentRequest);
+          paymentResponse = await this.processAlipayPayment(paymentRequest, order);
           break;
         case 'wechat':
-          paymentResponse = await this.processWechatPayment(paymentRequest);
+          paymentResponse = await this.processWechatPayment(paymentRequest, order);
           break;
         case 'paypal':
-          paymentResponse = await this.processPaypalPayment(paymentRequest);
+          paymentResponse = await this.processPaypalPayment(paymentRequest, order);
           break;
         case 'card':
           paymentResponse = await this.processCardPayment(paymentRequest);
@@ -187,55 +190,69 @@ class OrderManager {
     }
   }
 
-  // 支付宝支付 (模拟实现)
-  private async processAlipayPayment(request: PaymentRequest): Promise<PaymentResponse> {
-    // 在实际项目中，这里会调用支付宝API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          paymentId: `alipay_${Date.now()}`,
-          paymentUrl: `https://openapi.alipay.com/gateway.do?${new URLSearchParams({
-            service: 'create_direct_pay_by_user',
-            partner: 'YOUR_PARTNER_ID',
-            payment_type: '1',
-            notify_url: request.notifyUrl,
-            return_url: request.returnUrl,
-            out_trade_no: request.orderId,
-            subject: 'EV Parts Order',
-            total_fee: request.amount.toString(),
-            seller_email: 'YOUR_SELLER_EMAIL'
-          }).toString()}`
-        });
-      }, 1000);
-    });
+  // 支付宝支付
+  private async processAlipayPayment(request: PaymentRequest, order: Order): Promise<PaymentResponse> {
+    try {
+      // 获取支付宝支付参数
+      const params = paymentGateway.getAlipayParams(order);
+      
+      // 生成签名
+      const signature = paymentGateway.generateAlipaySignature(params);
+      
+      // 构建支付URL
+      const queryString = new URLSearchParams({ ...params, sign: signature }).toString();
+      const paymentUrl = `${params.gateway}?${queryString}`;
+      
+      return {
+        success: true,
+        paymentId: `alipay_${Date.now()}`,
+        paymentUrl
+      };
+    } catch (error) {
+      console.error('Alipay payment processing failed:', error);
+      return { success: false, error: 'Alipay payment processing failed' };
+    }
   }
 
-  // 微信支付 (模拟实现)
-  private async processWechatPayment(request: PaymentRequest): Promise<PaymentResponse> {
-    // 在实际项目中，这里会调用微信支付API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          paymentId: `wxpay_${Date.now()}`,
-          qrCode: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`
-        });
-      }, 1000);
-    });
+  // 微信支付
+  private async processWechatPayment(request: PaymentRequest, order: Order): Promise<PaymentResponse> {
+    try {
+      // 获取微信支付参数
+      const params = paymentGateway.getWechatParams(order);
+      
+      // 生成签名
+      const signature = paymentGateway.generateWechatSignature(params);
+      
+      // 实际项目中需要调用微信统一下单API
+      // 这里简化处理，返回模拟二维码
+      const qrCodeData = `weixin://wxpay/bizpayurl?pr=${order.orderNumber}`;
+      
+      return {
+        success: true,
+        paymentId: `wxpay_${Date.now()}`,
+        qrCode: qrCodeData
+      };
+    } catch (error) {
+      console.error('WeChat payment processing failed:', error);
+      return { success: false, error: 'WeChat payment processing failed' };
+    }
   }
 
-  // PayPal支付 (模拟实现)
-  private async processPaypalPayment(request: PaymentRequest): Promise<PaymentResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          paymentId: `paypal_${Date.now()}`,
-          paymentUrl: `https://www.paypal.com/checkoutnow?token=EC-${Date.now()}`
-        });
-      }, 1000);
-    });
+  // PayPal支付
+  private async processPaypalPayment(request: PaymentRequest, order: Order): Promise<PaymentResponse> {
+    try {
+      // 获取PayPal支付链接
+      const paymentUrl = await paymentGateway.getPaypalPaymentUrl(order);
+      
+      return {
+        success: true,
+        paymentId: `paypal_${Date.now()}`,
+        paymentUrl
+      };
+    } catch (error) {
+      console.error('PayPal payment processing failed:', error);
+      return { success: false, error: 'PayPal payment processing failed' };
+    }
   }
 
   // 信用卡支付 (模拟实现)

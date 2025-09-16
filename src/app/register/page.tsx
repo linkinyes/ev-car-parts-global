@@ -2,361 +2,310 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { authManager } from '@/lib/auth';
+import { Suspense } from 'react';
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
-  const [userType, setUserType] = useState<'regular' | 'wholesale'>('regular');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
     country: '',
     phone: '',
-    whatsapp: '',
+    userType: 'regular' as 'regular' | 'wholesale',
     ownedVehicles: '',
     interestedVehicles: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const countries = [
-    '中国', '马来西亚', '泰国', '新加坡', '印度尼西亚', '菲律宾', '越南',
-    '沙特阿拉伯', '阿联酋', '卡塔尔', '科威特', '巴林', '阿曼',
-    '俄罗斯', '哈萨克斯坦', '乌兹别克斯坦',
-    '巴西', '阿根廷', '智利', '墨西哥',
-    '德国', '法国', '意大利', '西班牙', '荷兰'
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
     
-    // 验证密码一致性
+    // 验证密码
     if (formData.password !== formData.confirmPassword) {
       setError('两次输入的密码不一致');
-      setIsLoading(false);
       return;
     }
     
+    // 验证密码长度
+    if (formData.password.length < 6) {
+      setError('密码长度至少为6位');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+    
     try {
-      const result = await authManager.register({
-        name: formData.email.split('@')[0], // 使用邮箱前缀作为默认用户名
-        email: formData.email,
-        type: userType,
-        country: formData.country,
-        phone: formData.phone,
-        whatsapp: formData.whatsapp,
-        ownedVehicles: formData.ownedVehicles,
-        interestedVehicles: formData.interestedVehicles
-      }, formData.password);
+      const result = await authManager.register(
+        {
+          name: formData.name,
+          email: formData.email,
+          type: formData.userType,
+          country: formData.country,
+          phone: formData.phone,
+          ownedVehicles: formData.userType === 'wholesale' ? formData.ownedVehicles : undefined,
+          interestedVehicles: formData.userType === 'regular' ? formData.interestedVehicles : undefined
+        },
+        formData.password
+      );
       
       if (result.success) {
-        // 注册成功，跳转到个人中心
-        router.push('/profile');
-        router.refresh();
+        setSuccess(true);
+        // 2秒后跳转到登录页面
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
       } else {
         setError(result.error || '注册失败');
       }
     } catch (err) {
-      setError('注册过程中发生错误');
-      console.error('Registration error:', err);
+      console.error('Registration failed:', err);
+      setError('注册过程中出现错误');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="h-8 w-8 bg-green-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">EV</span>
-                </div>
-                <span className="ml-2 text-xl font-semibold text-gray-900">Car Parts Global</span>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          创建账户
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          已有账户？{' '}
+          <button
+            onClick={() => router.push('/login')}
+            className="font-medium text-green-600 hover:text-green-500"
+          >
+            立即登录
+          </button>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {success ? (
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
               </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <a href="/login" className="text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium">
-                已有账号？登录
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">用户注册</h1>
-            <p className="mt-2 text-gray-600">加入EV Car Parts Global，开启新能源汽车之旅</p>
-          </div>
-
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* User Type Selection */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-700 mb-4">用户类型</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => setUserType('regular')}
-                className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                  userType === 'regular'
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                <h3 className="font-semibold text-gray-900">普通用户</h3>
-                <p className="text-sm text-gray-600 mt-1">个人用户，购买零件和汽车</p>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setUserType('wholesale')}
-                className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                  userType === 'wholesale'
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                <h3 className="font-semibold text-gray-900">批发客户</h3>
-                <p className="text-sm text-gray-600 mt-1">批发商，享受批发价格</p>
-              </button>
-            </div>
-          </div>
-
-          {userType === 'wholesale' && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-800 text-sm">
-                <strong>批发商注册说明：</strong>批发商账户需要人工审核，请注册后联系客服提供相关资质证明。
-                客服微信：EVParts2024
+              <h3 className="text-lg font-medium text-gray-900 mb-2">注册成功！</h3>
+              <p className="text-sm text-gray-500">
+                我们已向您的邮箱 {formData.email} 发送了验证邮件，请查收并点击邮件中的链接完成邮箱验证。
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                即将跳转到登录页面...
               </p>
             </div>
-          )}
+          ) : (
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <div className="rounded-md bg-red-50 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 必填项 */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">必填信息</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    国家 <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  姓名
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  邮箱地址
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  密码
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                  确认密码
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                  国家/地区
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="country"
+                    name="country"
+                    type="text"
+                    required
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  电话号码
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
+                  用户类型
+                </label>
+                <div className="mt-1">
+                  <select
+                    id="userType"
+                    name="userType"
+                    value={formData.userType}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                   >
-                    <option value="">请选择国家</option>
-                    {countries.map(country => (
-                      <option key={country} value={country}>{country}</option>
-                    ))}
+                    <option value="regular">普通用户</option>
+                    <option value="wholesale">批发商</option>
                   </select>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    邮箱 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="请输入邮箱地址"
-                  />
-                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {formData.userType === 'regular' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    密码 <span className="text-red-500">*</span>
+                  <label htmlFor="interestedVehicles" className="block text-sm font-medium text-gray-700">
+                    感兴趣的车型（可选）
                   </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="请输入密码"
+                  <div className="mt-1">
+                    <textarea
+                      id="interestedVehicles"
+                      name="interestedVehicles"
+                      rows={2}
+                      value={formData.interestedVehicles}
+                      onChange={handleChange}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <EyeIcon className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    确认密码 <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="请再次输入密码"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <EyeIcon className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 选填项 */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">选填信息</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">电话</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="请输入电话号码"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
-                  <input
-                    type="tel"
-                    name="whatsapp"
-                    value={formData.whatsapp}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="请输入WhatsApp号码"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">已有车型</label>
-                  <input
-                    type="text"
-                    name="ownedVehicles"
-                    value={formData.ownedVehicles}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="如：Tesla Model 3, 比亚迪汉EV"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">感兴趣车型</label>
-                  <input
-                    type="text"
-                    name="interestedVehicles"
-                    value={formData.interestedVehicles}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="如：蔚来ET7, 小鹏P7"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 协议 */}
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                id="agreement"
-                required
-                className="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-              />
-              <label htmlFor="agreement" className="ml-2 text-sm text-gray-600">
-                我已阅读并同意
-                <a href="/terms" className="text-green-600 hover:text-green-700 underline mx-1">
-                  用户协议
-                </a>
-                和
-                <a href="/privacy" className="text-green-600 hover:text-green-700 underline ml-1">
-                  隐私政策
-                </a>
-              </label>
-            </div>
-
-            {/* 提交按钮 */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <span>注册中...</span>
-              ) : userType === 'wholesale' ? (
-                '提交审核'
-              ) : (
-                '立即注册'
               )}
-            </button>
-          </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              已有账号？
-              <a href="/login" className="text-green-600 hover:text-green-700 font-medium ml-1">
-                立即登录
-              </a>
-            </p>
-          </div>
+              {formData.userType === 'wholesale' && (
+                <div>
+                  <label htmlFor="ownedVehicles" className="block text-sm font-medium text-gray-700">
+                    拥有的车型（可选）
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      id="ownedVehicles"
+                      name="ownedVehicles"
+                      rows={2}
+                      value={formData.ownedVehicles}
+                      onChange={handleChange}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                >
+                  {loading ? '注册中...' : '注册'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <RegisterContent />
+    </Suspense>
   );
 }

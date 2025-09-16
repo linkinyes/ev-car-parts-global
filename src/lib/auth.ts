@@ -14,6 +14,10 @@ export interface User {
   lastLogin?: string;
   isVerified: boolean;
   isActive: boolean;
+  emailVerificationToken?: string;
+  emailVerifiedAt?: string;
+  phoneVerificationCode?: string;
+  phoneVerifiedAt?: string;
 }
 
 // 用户认证管理器
@@ -84,7 +88,7 @@ class AuthManager {
   }
 
   // 用户注册
-  async register(userData: Omit<User, 'id' | 'joinDate' | 'isVerified' | 'isActive' | 'lastLogin'>, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
+  async register(userData: Omit<User, 'id' | 'joinDate' | 'isVerified' | 'isActive' | 'lastLogin' | 'emailVerificationToken' | 'emailVerifiedAt' | 'phoneVerificationCode' | 'phoneVerifiedAt'>, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
     // 在实际项目中，这里会调用API创建新用户
     console.log('Register attempt:', userData);
     
@@ -100,7 +104,11 @@ class AuthManager {
       joinDate: new Date().toISOString().split('T')[0],
       isVerified: false, // 需要邮箱验证
       isActive: true,
-      lastLogin: new Date().toISOString().split('T')[0]
+      lastLogin: new Date().toISOString().split('T')[0],
+      emailVerificationToken: this.generateVerificationToken(),
+      emailVerifiedAt: undefined,
+      phoneVerificationCode: undefined,
+      phoneVerifiedAt: undefined
     };
     
     // 批发商需要审核
@@ -111,10 +119,132 @@ class AuthManager {
     this.users.push(newUser);
     this.currentUser = newUser;
     
+    // 发送邮箱验证邮件
+    await this.sendVerificationEmail(newUser.email, newUser.emailVerificationToken!);
+    
     // 保存到本地存储
     this.saveToLocalStorage();
     
     return { success: true, user: newUser };
+  }
+
+  // 生成验证令牌
+  private generateVerificationToken(): string {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
+  // 生成手机验证码
+  private generatePhoneVerificationCode(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // 6位数字验证码
+  }
+
+  // 发送邮箱验证邮件
+  async sendVerificationEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
+    // 在实际项目中，这里会调用邮件服务发送验证邮件
+    console.log(`Sending verification email to: ${email} with token: ${token}`);
+    
+    // 模拟发送邮件
+    // 实际项目中应该调用真实的邮件服务，如SendGrid、AWS SES等
+    try {
+      // 模拟API调用延迟
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`Verification email sent successfully to ${email}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      return { success: false, error: '发送验证邮件失败' };
+    }
+  }
+
+  // 验证邮箱验证码
+  async verifyEmail(token: string): Promise<{ success: boolean; error?: string }> {
+    // 在实际项目中，这里会验证邮箱验证码
+    console.log(`Verifying email with token: ${token}`);
+    
+    const user = this.users.find(u => u.emailVerificationToken === token);
+    if (user) {
+      user.isVerified = true;
+      user.emailVerifiedAt = new Date().toISOString();
+      user.emailVerificationToken = undefined;
+      
+      // 如果是当前用户，更新当前用户状态
+      if (this.currentUser && this.currentUser.id === user.id) {
+        this.currentUser = user;
+      }
+      
+      this.saveToLocalStorage();
+      return { success: true };
+    }
+    
+    return { success: false, error: '无效的验证令牌' };
+  }
+
+  // 发送手机验证码
+  async sendPhoneVerificationCode(phone: string): Promise<{ success: boolean; error?: string }> {
+    // 在实际项目中，这里会调用短信服务发送验证码
+    console.log(`Sending verification code to phone: ${phone}`);
+    
+    // 查找用户
+    const user = this.currentUser;
+    if (!user) {
+      return { success: false, error: '用户未登录' };
+    }
+    
+    // 生成验证码
+    const verificationCode = this.generatePhoneVerificationCode();
+    user.phoneVerificationCode = verificationCode;
+    
+    // 模拟发送短信
+    // 实际项目中应该调用真实的短信服务，如Twilio、阿里云短信等
+    try {
+      // 模拟API调用延迟
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`Verification code sent successfully to ${phone}: ${verificationCode}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to send verification code:', error);
+      return { success: false, error: '发送验证码失败' };
+    }
+  }
+
+  // 验证手机验证码
+  async verifyPhone(code: string): Promise<{ success: boolean; error?: string }> {
+    const user = this.currentUser;
+    if (!user) {
+      return { success: false, error: '用户未登录' };
+    }
+    
+    if (user.phoneVerificationCode === code) {
+      user.phoneVerifiedAt = new Date().toISOString();
+      user.phoneVerificationCode = undefined;
+      this.saveToLocalStorage();
+      return { success: true };
+    }
+    
+    return { success: false, error: '验证码错误' };
+  }
+
+  // 更新用户信息
+  async updateProfile(userData: Partial<User>): Promise<{ success: boolean; error?: string }> {
+    const user = this.getCurrentUser();
+    
+    if (!user) {
+      return { success: false, error: '用户未登录' };
+    }
+    
+    // 更新用户信息
+    Object.assign(user, userData);
+    
+    // 同步到用户列表
+    const userIndex = this.users.findIndex(u => u.id === user.id);
+    if (userIndex !== -1) {
+      this.users[userIndex] = { ...user };
+    }
+    
+    // 保存到本地存储
+    this.saveToLocalStorage();
+    
+    return { success: true };
   }
 
   // 用户登出
@@ -142,51 +272,6 @@ class AuthManager {
   isWholesaleUser(): boolean {
     const user = this.getCurrentUser();
     return user ? user.type === 'wholesale' : false;
-  }
-
-  // 更新用户信息
-  async updateProfile(userData: Partial<User>): Promise<{ success: boolean; error?: string }> {
-    const user = this.getCurrentUser();
-    
-    if (!user) {
-      return { success: false, error: '用户未登录' };
-    }
-    
-    // 更新用户信息
-    Object.assign(user, userData);
-    
-    // 同步到用户列表
-    const userIndex = this.users.findIndex(u => u.id === user.id);
-    if (userIndex !== -1) {
-      this.users[userIndex] = { ...user };
-    }
-    
-    // 保存到本地存储
-    this.saveToLocalStorage();
-    
-    return { success: true };
-  }
-
-  // 发送邮箱验证邮件
-  async sendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
-    // 在实际项目中，这里会调用邮件服务发送验证邮件
-    console.log(`Sending verification email to: ${email}`);
-    return { success: true };
-  }
-
-  // 验证邮箱验证码
-  async verifyEmail(token: string): Promise<{ success: boolean; error?: string }> {
-    // 在实际项目中，这里会验证邮箱验证码
-    console.log(`Verifying email with token: ${token}`);
-    
-    const user = this.getCurrentUser();
-    if (user) {
-      user.isVerified = true;
-      this.saveToLocalStorage();
-      return { success: true };
-    }
-    
-    return { success: false, error: '验证失败' };
   }
 
   // 保存到本地存储

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowLeftIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 
 interface NewsFormData {
   title: string;
@@ -31,7 +32,7 @@ const categories = [
   '新品发布', '企业新闻', '展会活动', '充电设施'
 ];
 
-export default function AddNewsPage() {
+function AddNewsContent() {
   const [formData, setFormData] = useState<NewsFormData>(initialFormData);
   const router = useRouter();
 
@@ -168,5 +169,13 @@ export default function AddNewsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AddNewsPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <AddNewsContent />
+    </Suspense>
   );
 }

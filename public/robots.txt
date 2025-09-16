@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://evpartsglobal.com/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Yandex
+Allow: /

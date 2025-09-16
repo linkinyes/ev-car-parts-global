@@ -1,92 +1,123 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { orderManager } from '@/lib/order';
 
-export default function OrderSuccessPage() {
-  const [orderInfo, setOrderInfo] = useState<any>(null);
+// 创建一个包装组件来处理useSearchParams
+function OrderSuccessContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
+  const [order, setOrder] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 从localStorage获取订单信息
-    const savedOrder = localStorage.getItem('last_order');
-    if (savedOrder) {
-      setOrderInfo(JSON.parse(savedOrder));
+    if (orderId) {
+      // 获取订单信息
+      const orderData = orderManager.getOrderById(orderId);
+      if (orderData) {
+        setOrder(orderData);
+      }
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
-  }, []);
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">加载中...</div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">订单未找到</h1>
+          <p className="mb-4">抱歉，我们无法找到您指定的订单。</p>
+          <button
+            onClick={() => router.push('/')}
+            className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+          >
+            返回首页
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <CheckCircleIcon className="h-12 w-12 text-green-600" />
-              </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">订单支付成功！</h1>
+        <p className="text-lg text-gray-600 mb-8">感谢您的购买。您的订单已成功处理。</p>
+        
+        <div className="bg-white shadow rounded-lg p-6 mb-8 text-left">
+          <h2 className="text-xl font-semibold mb-4">订单详情</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">订单号</p>
+              <p className="font-medium">{order.orderNumber}</p>
             </div>
-            
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">订单支付成功！</h1>
-            <p className="text-lg text-gray-600 mb-8">
-              感谢您的购买，我们已收到您的订单并开始处理。
-            </p>
-            
-            {orderInfo ? (
-              <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">订单详情</h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">订单号:</span>
-                    <span className="font-medium">{orderInfo.orderNumber}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">下单时间:</span>
-                    <span className="font-medium">{new Date(orderInfo.createdAt).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">支付金额:</span>
-                    <span className="font-medium text-green-600">${orderInfo.total.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">支付方式:</span>
-                    <span className="font-medium">
-                      {orderInfo.paymentMethod === 'alipay' && '支付宝'}
-                      {orderInfo.paymentMethod === 'wechat' && '微信支付'}
-                      {orderInfo.paymentMethod === 'paypal' && 'PayPal'}
-                      {orderInfo.paymentMethod === 'card' && '信用卡'}
-                      {orderInfo.paymentMethod === 'bank_transfer' && '银行转账'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gray-50 rounded-lg p-6 mb-8">
-                <p className="text-gray-600">订单信息加载中...</p>
-              </div>
-            )}
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/profile?tab=orders"
-                className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
-              >
-                查看订单详情
-              </Link>
-              <Link
-                href="/"
-                className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                继续购物
-              </Link>
+            <div>
+              <p className="text-sm text-gray-500">订单日期</p>
+              <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
             </div>
+            <div>
+              <p className="text-sm text-gray-500">支付金额</p>
+              <p className="font-medium">{order.total.toFixed(2)} {order.currency}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">支付状态</p>
+              <p className="font-medium text-green-600">已支付</p>
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-2">配送信息</h3>
+            <p>{order.shippingAddress.name}</p>
+            <p>{order.shippingAddress.address1}</p>
+            <p>{order.shippingAddress.address2 && `${order.shippingAddress.address2}, `}</p>
+            <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</p>
+            <p>{order.shippingAddress.country}</p>
           </div>
         </div>
         
-        <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>如有任何问题，请联系客服</p>
-          <p className="mt-1">邮箱: linkinyes@gmail.com | 电话: +86 19866695358</p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <button
+            onClick={() => router.push('/profile')}
+            className="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            查看订单详情
+          </button>
+          <button
+            onClick={() => router.push('/')}
+            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            继续购物
+          </button>
+        </div>
+        
+        <div className="mt-8 text-sm text-gray-500">
+          <p>我们已发送订单确认邮件至 {order.userEmail}</p>
+          <p>如有任何问题，请联系客服。</p>
         </div>
       </div>
     </div>
   );
+}
+
+// 主页面组件，不直接使用useSearchParams
+export default function OrderSuccessPage() {
+  return <OrderSuccessContent />;
 }

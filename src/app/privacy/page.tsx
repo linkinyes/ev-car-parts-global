@@ -1,9 +1,12 @@
-'use client';
-
 import React from 'react';
 import Navigation from '../../components/Navigation';
+import { headers } from 'next/headers';
 
 export default function PrivacyPage() {
+  // 在服务端渲染时避免使用客户端钩子
+  const headerList = headers();
+  const isClient = typeof window !== 'undefined';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}

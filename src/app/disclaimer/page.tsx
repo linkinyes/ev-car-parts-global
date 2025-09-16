@@ -1,9 +1,9 @@
-'use client';
-
 import React from 'react';
 import Navigation from '../../components/Navigation';
+import { headers } from 'next/headers';
+import { Suspense } from 'react';
 
-export default function DisclaimerPage() {
+function DisclaimerContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -91,5 +91,13 @@ export default function DisclaimerPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DisclaimerPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <DisclaimerContent />
+    </Suspense>
   );
 }

@@ -40,7 +40,7 @@ const samplePart: Part = {
   quality: 'original',
   retailPrice: 15000,
   wholesalePrice: 12000,
-  images: [imageMap.parts['battery-pack']],
+  images: ['/images/parts/battery-pack.jpg'],
   description: '高效电池包冷却系统，确保电池温度控制在最佳范围内，延长电池使用寿命。采用先进的液冷技术，提供卓越的散热性能。',
   specifications: {
     '适用车型': 'Tesla Model 3/Y/S/X',
@@ -79,7 +79,7 @@ function QualityBadge({ quality }: { quality: string }) {
   );
 }
 
-export default function PartDetailPage({ params }: { params: { id: string } }) {
+export default function PartDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorited, setIsFavorited] = useState(false);
