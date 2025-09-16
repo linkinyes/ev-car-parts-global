@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserIcon, ChevronDownIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { UserIcon, ChevronDownIcon, Bars3Icon, XMarkIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect, useRef } from 'react';
 import LanguageSelector from './LanguageSelector';
+import CartDrawer from './CartDrawer';
+import { cartManager, Cart } from '@/lib/cart';
 
 interface NavigationProps {
   isLoggedIn?: boolean;
@@ -24,7 +26,15 @@ export default function Navigation({ isLoggedIn = false, userName }: NavigationP
   const pathname = usePathname();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cart, setCart] = useState<Cart>(cartManager.getCart());
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // 监听购物车变化
+  useEffect(() => {
+    const unsubscribe = cartManager.subscribe(setCart);
+    return unsubscribe;
+  }, []);
 
   // 点击外部区域关闭用户菜单
   useEffect(() => {
@@ -108,6 +118,19 @@ export default function Navigation({ isLoggedIn = false, userName }: NavigationP
           </div>
           
           <div className="flex items-center space-x-6">
+            {/* 购物车图标 */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-2 text-gray-700 hover:text-green-600 rounded-md hover:bg-gray-100"
+            >
+              <ShoppingBagIcon className="h-5 w-5" />
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cart.totalItems}
+                </span>
+              )}
+            </button>
+
             {/* 移动端菜单按钮 */}
             <button
               className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
@@ -239,6 +262,9 @@ export default function Navigation({ isLoggedIn = false, userName }: NavigationP
           </div>
         )}
       </div>
+      
+      {/* 购物车抽屉 */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </nav>
   );
 }

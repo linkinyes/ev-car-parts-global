@@ -1,26 +1,61 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { UserIcon, CogIcon, HeartIcon, ShoppingBagIcon, ChatBubbleLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import { UserIcon, CogIcon, HeartIcon, ShoppingBagIcon, ChatBubbleLeftIcon, DocumentTextIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
 import Navigation from '../../components/Navigation';
+import { authManager, User } from '@/lib/auth';
+import { cartManager } from '@/lib/cart';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cartItems, setCartItems] = useState(0);
 
-  // 模拟用户数据
-  const userData = {
-    name: '张先生',
-    email: 'zhang@example.com',
-    userType: 'regular', // regular 或 wholesale
-    country: '中国',
-    phone: '+86 19866695358',
-    whatsapp: '+8619866695358',
-    ownedVehicles: 'Tesla Model 3, 比亚迪汉EV',
-    interestedVehicles: '蔚来ET7, 小鹏P7',
-    joinDate: '2024-01-15',
-    avatar: '/api/placeholder/100/100'
+  // 检查用户认证状态
+  useEffect(() => {
+    const currentUser = authManager.getCurrentUser();
+    if (!currentUser) {
+      // 未登录，跳转到登录页面
+      router.push('/login');
+    } else {
+      setUser(currentUser);
+      setLoading(false);
+    }
+    
+    // 监听购物车变化
+    const unsubscribe = cartManager.subscribe((cart) => {
+      setCartItems(cart.totalItems);
+    });
+    
+    // 初始化购物车数量
+    setCartItems(cartManager.getCart().totalItems);
+    
+    return unsubscribe;
+  }, [router]);
+
+  // 处理登出
+  const handleLogout = () => {
+    authManager.logout();
+    router.push('/login');
   };
+
+  // 模拟订单数据
+  const orders = [
+    { id: 'ORD-001', date: '2024-01-15', status: '已完成', total: 15000, items: 2 },
+    { id: 'ORD-002', date: '2024-01-10', status: '已发货', total: 8500, items: 1 },
+    { id: 'ORD-003', date: '2024-01-05', status: '处理中', total: 2800, items: 1 }
+  ];
+
+  // 模拟收藏商品
+  const favorites = [
+    { id: '1', name: '电池包冷却系统', price: 15000, image: '/api/placeholder/100/100' },
+    { id: '2', name: '充电口模块', price: 2800, image: '/api/placeholder/100/100' },
+    { id: '3', name: '电机控制器', price: 8500, image: '/api/placeholder/100/100' }
+  ];
 
   const menuItems = [
     { id: 'overview', name: '概览', icon: UserIcon },
@@ -31,10 +66,25 @@ export default function ProfilePage() {
     { id: 'settings', name: '账户设置', icon: CogIcon },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">加载中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <Navigation isLoggedIn={true} userName={userData.name} />
+      <Navigation isLoggedIn={true} userName={user.name} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -43,17 +93,17 @@ export default function ProfilePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               {/* 用户信息卡片 */}
               <div className="flex items-center mb-6">
-                <img 
-                  src={userData.avatar} 
-                  alt="用户头像" 
-                  className="w-16 h-16 rounded-full object-cover"
-                />
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                  <UserIcon className="h-8 w-8 text-green-600" />
+                </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">{userData.name}</h3>
-                  <p className="text-sm text-gray-500">{userData.userType === 'wholesale' ? '批发客户' : '普通用户'}</p>
-                  {userData.userType === 'wholesale' && (
+                  <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
+                  <p className="text-sm text-gray-500">
+                    {user.type === 'wholesale' ? '批发客户' : '普通用户'}
+                  </p>
+                  {user.type === 'wholesale' && (
                     <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">
-                      已认证
+                      {user.isVerified ? '已认证' : '待审核'}
                     </span>
                   )}
                 </div>
@@ -78,6 +128,15 @@ export default function ProfilePage() {
                     </button>
                   );
                 })}
+                
+                {/* 登出按钮 */}
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
+                  退出登录
+                </button>
               </nav>
             </div>
           </div>
@@ -92,18 +151,27 @@ export default function ProfilePage() {
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">基本信息</h3>
                       <div className="space-y-2 text-sm">
-                        <p><span className="font-medium">邮箱：</span>{userData.email}</p>
-                        <p><span className="font-medium">国家：</span>{userData.country}</p>
-                        <p><span className="font-medium">电话：</span>{userData.phone}</p>
-                        <p><span className="font-medium">WhatsApp：</span>{userData.whatsapp}</p>
-                        <p><span className="font-medium">注册时间：</span>{userData.joinDate}</p>
+                        <p><span className="font-medium">邮箱：</span>{user.email}</p>
+                        <p><span className="font-medium">国家：</span>{user.country}</p>
+                        {user.phone && <p><span className="font-medium">电话：</span>{user.phone}</p>}
+                        {user.whatsapp && <p><span className="font-medium">WhatsApp：</span>{user.whatsapp}</p>}
+                        <p><span className="font-medium">注册时间：</span>{user.joinDate}</p>
+                        {user.lastLogin && <p><span className="font-medium">最后登录：</span>{user.lastLogin}</p>}
                       </div>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-gray-500 mb-2">车辆信息</h3>
                       <div className="space-y-2 text-sm">
-                        <p><span className="font-medium">已有车型：</span>{userData.ownedVehicles}</p>
-                        <p><span className="font-medium">感兴趣车型：</span>{userData.interestedVehicles}</p>
+                        {user.ownedVehicles ? (
+                          <p><span className="font-medium">已有车型：</span>{user.ownedVehicles}</p>
+                        ) : (
+                          <p className="text-gray-400">未填写已有车型</p>
+                        )}
+                        {user.interestedVehicles ? (
+                          <p><span className="font-medium">感兴趣车型：</span>{user.interestedVehicles}</p>
+                        ) : (
+                          <p className="text-gray-400">未填写感兴趣车型</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -112,11 +180,11 @@ export default function ProfilePage() {
                 {/* 统计数据 */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                    <div className="text-2xl font-bold text-green-600">12</div>
+                    <div className="text-2xl font-bold text-green-600">{orders.length}</div>
                     <div className="text-sm text-gray-500">订单数量</div>
                   </div>
                   <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                    <div className="text-2xl font-bold text-blue-600">8</div>
+                    <div className="text-2xl font-bold text-blue-600">{favorites.length}</div>
                     <div className="text-sm text-gray-500">收藏商品</div>
                   </div>
                   <div className="bg-white rounded-lg shadow-md p-6 text-center">
@@ -134,20 +202,81 @@ export default function ProfilePage() {
             {activeTab === 'orders' && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">我的订单</h2>
-                <div className="text-center py-8">
-                  <ShoppingBagIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-gray-500">暂无订单记录</p>
-                </div>
+                {orders.length > 0 ? (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div key={order.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-medium text-gray-900">订单号: {order.id}</div>
+                            <div className="text-sm text-gray-500 mt-1">下单时间: {order.date}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-gray-900">¥{order.total.toLocaleString()}</div>
+                            <div className="text-sm mt-1">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                order.status === '已完成' ? 'bg-green-100 text-green-800' :
+                                order.status === '已发货' ? 'bg-blue-100 text-blue-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {order.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                          {order.items} 件商品
+                        </div>
+                        <div className="mt-3 flex space-x-3">
+                          <button className="text-sm text-green-600 hover:text-green-700">
+                            查看详情
+                          </button>
+                          <button className="text-sm text-gray-600 hover:text-gray-700">
+                            再次购买
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <ShoppingBagIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-gray-500">暂无订单记录</p>
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === 'favorites' && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">我的收藏</h2>
-                <div className="text-center py-8">
-                  <HeartIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-gray-500">暂无收藏商品</p>
-                </div>
+                {favorites.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {favorites.map((item) => (
+                      <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-full h-32 object-cover"
+                        />
+                        <div className="p-3">
+                          <h3 className="font-medium text-gray-900 text-sm line-clamp-2">{item.name}</h3>
+                          <div className="mt-2 flex items-center justify-between">
+                            <div className="text-lg font-semibold text-green-600">¥{item.price.toLocaleString()}</div>
+                            <button className="text-red-500 hover:text-red-700">
+                              <HeartIcon className="h-5 w-5 fill-current" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <HeartIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-gray-500">暂无收藏商品</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -157,6 +286,9 @@ export default function ProfilePage() {
                 <div className="text-center py-8">
                   <ChatBubbleLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
                   <p className="mt-2 text-gray-500">暂无发布的帖子</p>
+                  <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    发布新帖子
+                  </button>
                 </div>
               </div>
             )}
@@ -180,7 +312,7 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">姓名</label>
                       <input
                         type="text"
-                        defaultValue={userData.name}
+                        defaultValue={user.name}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
@@ -188,7 +320,7 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
                       <input
                         type="email"
-                        defaultValue={userData.email}
+                        defaultValue={user.email}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
@@ -196,7 +328,7 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">电话</label>
                       <input
                         type="tel"
-                        defaultValue={userData.phone}
+                        defaultValue={user.phone || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
@@ -204,7 +336,7 @@ export default function ProfilePage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
                       <input
                         type="tel"
-                        defaultValue={userData.whatsapp}
+                        defaultValue={user.whatsapp || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
@@ -214,7 +346,7 @@ export default function ProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">已有车型</label>
                     <input
                       type="text"
-                      defaultValue={userData.ownedVehicles}
+                      defaultValue={user.ownedVehicles || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
@@ -223,7 +355,7 @@ export default function ProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">感兴趣车型</label>
                     <input
                       type="text"
-                      defaultValue={userData.interestedVehicles}
+                      defaultValue={user.interestedVehicles || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>

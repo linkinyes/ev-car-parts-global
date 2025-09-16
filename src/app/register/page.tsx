@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { authManager } from '@/lib/auth';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [userType, setUserType] = useState<'regular' | 'wholesale'>('regular');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,10 +38,43 @@ export default function RegisterPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 处理表单提交
-    console.log('Form submitted:', { userType, ...formData });
+    setIsLoading(true);
+    setError('');
+    
+    // 验证密码一致性
+    if (formData.password !== formData.confirmPassword) {
+      setError('两次输入的密码不一致');
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      const result = await authManager.register({
+        name: formData.email.split('@')[0], // 使用邮箱前缀作为默认用户名
+        email: formData.email,
+        type: userType,
+        country: formData.country,
+        phone: formData.phone,
+        whatsapp: formData.whatsapp,
+        ownedVehicles: formData.ownedVehicles,
+        interestedVehicles: formData.interestedVehicles
+      }, formData.password);
+      
+      if (result.success) {
+        // 注册成功，跳转到个人中心
+        router.push('/profile');
+        router.refresh();
+      } else {
+        setError(result.error || '注册失败');
+      }
+    } catch (err) {
+      setError('注册过程中发生错误');
+      console.error('Registration error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,6 +107,12 @@ export default function RegisterPage() {
             <h1 className="text-3xl font-bold text-gray-900">用户注册</h1>
             <p className="mt-2 text-gray-600">加入EV Car Parts Global，开启新能源汽车之旅</p>
           </div>
+
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-800 text-sm">{error}</p>
+            </div>
+          )}
 
           {/* User Type Selection */}
           <div className="mb-8">
@@ -290,9 +334,16 @@ export default function RegisterPage() {
             {/* 提交按钮 */}
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+              disabled={isLoading}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {userType === 'wholesale' ? '提交审核' : '立即注册'}
+              {isLoading ? (
+                <span>注册中...</span>
+              ) : userType === 'wholesale' ? (
+                '提交审核'
+              ) : (
+                '立即注册'
+              )}
             </button>
           </form>
 

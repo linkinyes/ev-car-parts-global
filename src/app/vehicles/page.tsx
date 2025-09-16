@@ -1,110 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, PhotoIcon, FunnelIcon, HeartIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import Navigation from '../../components/Navigation';
 import CustomerService from '../../components/CustomerService';
-import { imageMap } from '../../lib/images';
+import { productManager, Vehicle } from '@/lib/products';
 
-interface Vehicle {
-  id: string;
-  name: string;
-  brand: string;
-  year: number;
-  model: string;
-  type: 'new' | 'used';
+interface VehicleWithPrice extends Vehicle {
   price: number;
   originalPrice?: number;
-  range: number; // 续航里程 (km)
-  displacement?: string; // 排量 (L)
-  images: string[];
-  description: string;
-  features: string[];
-  mileage?: number; // 二手车里程
-  condition?: string; // 二手车车况
-  location: string;
-  dealer: string;
-  isVerified: boolean;
-  batteryHealth?: number; // 电池健康度 (%)
 }
-
-const sampleVehicles: Vehicle[] = [
-  {
-    id: '1',
-    name: 'Model 3 高性能版',
-    brand: 'Tesla',
-    year: 2024,
-    model: 'Model 3',
-    type: 'new',
-    price: 339900,
-    range: 675,
-    images: [imageMap.vehicles['tesla-model3']],
-    description: '全新Tesla Model 3高性能版，零百加速3.3秒，WLTP工况续航675公里',
-    features: ['自动驾驶', '空气悬挂', '高性能制动', '碳纤维扰流板'],
-    location: '上海',
-    dealer: 'Tesla官方',
-    isVerified: true,
-    batteryHealth: 100
-  },
-  {
-    id: '2',
-    name: '汉EV 创世版',
-    brand: 'BYD',
-    year: 2023,
-    model: '汉EV',
-    type: 'used',
-    price: 219000,
-    originalPrice: 289800,
-    range: 550,
-    images: [imageMap.vehicles['byd-han-ev']],
-    description: '比亚迪汉EV创世版，刀片电池技术，车况极佳',
-    features: ['刀片电池', 'DiPilot智能驾驶', 'Nappa真皮座椅', '丹拿音响'],
-    mileage: 15000,
-    condition: '准新车',
-    location: '深圳',
-    dealer: 'BYD认证二手车',
-    isVerified: true,
-    batteryHealth: 98
-  },
-  {
-    id: '3',
-    name: 'ET7 首发版',
-    brand: 'NIO',
-    year: 2024,
-    model: 'ET7',
-    type: 'new',
-    price: 448000,
-    range: 930,
-    images: [imageMap.vehicles['nio-et7']],
-    description: '蔚来ET7首发版，150kWh固态电池，CLTC续航930公里',
-    features: ['固态电池', 'NAD自动驾驶', '空气悬挂', '女王副驾'],
-    location: '合肥',
-    dealer: 'NIO House',
-    isVerified: true,
-    batteryHealth: 100
-  },
-  {
-    id: '4',
-    name: 'P7 鹏翼版',
-    brand: '小鹏',
-    year: 2023,
-    model: 'P7',
-    type: 'used',
-    price: 185000,
-    originalPrice: 249900,
-    range: 480,
-    images: [imageMap.vehicles['xpeng-p7']],
-    description: '小鹏P7鹏翼版，NGP高速自动驾驶，个人一手车',
-    features: ['NGP自动驾驶', '鹏翼门', '丹拿音响', '哨兵模式'],
-    mileage: 28000,
-    condition: '良好',
-    location: '广州',
-    dealer: '小鹏认证二手车',
-    isVerified: true,
-    batteryHealth: 95
-  }
-];
 
 function VehicleTypeTab({ active, onClick, children, count }: { active: boolean; onClick: () => void; children: React.ReactNode; count: number }) {
   return (
@@ -121,8 +27,15 @@ function VehicleTypeTab({ active, onClick, children, count }: { active: boolean;
   );
 }
 
-function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+function VehicleCard({ vehicle }: { vehicle: VehicleWithPrice }) {
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const contactSupplier = () => {
+    const message = `您好，我想咨询车辆：${vehicle.name}（${vehicle.year}年 ${vehicle.brand}）`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/8619866695358?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
@@ -145,18 +58,16 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         
         <div className="absolute top-3 left-3 flex space-x-2">
           <span className={`px-2 py-1 rounded text-xs font-medium ${
-            vehicle.type === 'new' 
+            vehicle.vehicleType === 'new' 
               ? 'bg-green-500 text-white' 
               : 'bg-blue-500 text-white'
           }`}>
-            {vehicle.type === 'new' ? '新车' : '二手车'}
+            {vehicle.vehicleType === 'new' ? '新车' : '二手车'}
           </span>
-          {vehicle.isVerified && (
-            <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium flex items-center">
-              <CheckCircleIcon className="h-3 w-3 mr-1" />
-              认证
-            </span>
-          )}
+          <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium flex items-center">
+            <CheckCircleIcon className="h-3 w-3 mr-1" />
+            认证
+          </span>
         </div>
 
         <div className="absolute bottom-3 right-3">
@@ -170,11 +81,11 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <div className="flex items-start justify-between mb-2">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{vehicle.name}</h3>
-            <p className="text-sm text-gray-600">{vehicle.year}年 · {vehicle.brand}</p>
+            <p className="text-sm text-gray-600">{vehicle.year}年 · {vehicle.brand} {vehicle.model}</p>
           </div>
-          {vehicle.batteryHealth && (
+          {vehicle.batteryCapacity && (
             <div className="text-xs text-gray-500">
-              电池: {vehicle.batteryHealth}%
+              电池: {vehicle.batteryCapacity}kWh
             </div>
           )}
         </div>
@@ -182,33 +93,19 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         <div className="grid grid-cols-2 gap-2 mb-3 text-sm text-gray-600">
           <div>续航: {vehicle.range}km</div>
           {vehicle.mileage && <div>里程: {vehicle.mileage.toLocaleString()}km</div>}
-          {vehicle.displacement && <div>排量: {vehicle.displacement}</div>}
-          {vehicle.condition && <div>车况: {vehicle.condition}</div>}
+          <div>车况: {vehicle.condition || '良好'}</div>
         </div>
         
         <p className="text-sm text-gray-500 mb-3 line-clamp-2">{vehicle.description}</p>
         
-        <div className="flex flex-wrap gap-1 mb-3">
-          {vehicle.features.slice(0, 3).map((feature, index) => (
-            <span key={index} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-              {feature}
-            </span>
-          ))}
-          {vehicle.features.length > 3 && (
-            <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-              +{vehicle.features.length - 3}
-            </span>
-          )}
-        </div>
-        
         <div className="flex items-end justify-between">
           <div>
             <div className="text-xl font-bold text-green-600">
-              ¥{vehicle.price.toLocaleString()}
+              ¥{(vehicle.price / 10000).toFixed(2)}万
             </div>
             {vehicle.originalPrice && (
               <div className="text-sm text-gray-500 line-through">
-                原价: ¥{vehicle.originalPrice.toLocaleString()}
+                原价: ¥{(vehicle.originalPrice / 10000).toFixed(2)}万
               </div>
             )}
           </div>
@@ -220,12 +117,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
             
             {/* 咨询按钮 */}
             <button 
-              onClick={() => {
-                const message = `您好，我想咨询车辆：${vehicle.name}（${vehicle.year}年 ${vehicle.brand}）`;
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/8619866695358?text=${encodedMessage}`;
-                window.open(whatsappUrl, '_blank');
-              }}
+              onClick={contactSupplier}
               className="px-3 py-2 border border-green-600 text-green-600 hover:bg-green-50 rounded-md text-sm font-medium transition-colors"
             >
               咨询
@@ -235,12 +127,9 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         
         <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
           <span>📍 {vehicle.location}</span>
-          <span>{vehicle.dealer}</span>
+          <span>{vehicle.supplierName}</span>
         </div>
       </div>
-      
-      {/* 客服功能 */}
-      <CustomerService productType="vehicle" />
     </div>
   );
 }
@@ -252,22 +141,78 @@ export default function VehiclesPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [rangeFilter, setRangeFilter] = useState<[number, number]>([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
+  const [vehicles, setVehicles] = useState<VehicleWithPrice[]>([]);
+  const [filteredVehicles, setFilteredVehicles] = useState<VehicleWithPrice[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const brands = ['Tesla', 'BYD', 'NIO', '小鹏', '理想', '威马', '哪吒', '零跑'];
+  // 模拟价格数据
+  const vehiclePrices: Record<string, { price: number; originalPrice?: number }> = {
+    'vehicle_001': { price: 299000, originalPrice: 320000 },
+    'vehicle_002': { price: 185000, originalPrice: 220000 },
+    'vehicle_003': { price: 328000, originalPrice: 350000 },
+    'vehicle_004': { price: 252000 },
+    'vehicle_005': { price: 459000 },
+    'vehicle_006': { price: 286000, originalPrice: 310000 },
+    'vehicle_007': { price: 358000 },
+    'vehicle_008': { price: 412000, originalPrice: 450000 }
+  };
+
+  useEffect(() => {
+    // 获取车辆数据并添加价格信息
+    const allVehicles = productManager.getVehicles().map(vehicle => {
+      const prices = vehiclePrices[vehicle.id] || { price: 200000 };
+      return {
+        ...vehicle,
+        price: prices.price,
+        originalPrice: prices.originalPrice
+      };
+    });
+    
+    setVehicles(allVehicles);
+    setFilteredVehicles(allVehicles);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // 根据筛选条件过滤车辆
+    let result = [...vehicles];
+    
+    if (activeTab === 'new') {
+      result = result.filter(v => v.vehicleType === 'new');
+    } else if (activeTab === 'used') {
+      result = result.filter(v => v.vehicleType === 'used');
+    }
+    
+    if (selectedBrand) {
+      result = result.filter(v => v.brand === selectedBrand);
+    }
+    
+    if (searchQuery) {
+      result = result.filter(v => 
+        v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.model.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    setFilteredVehicles(result);
+  }, [activeTab, selectedBrand, searchQuery, vehicles]);
+
+  const brands = ['Tesla', '比亚迪', '蔚来', '小鹏', '理想', '极氪', '哪吒', '红旗'];
   
-  const filteredVehicles = sampleVehicles.filter(vehicle => {
-    if (activeTab === 'new' && vehicle.type !== 'new') return false;
-    if (activeTab === 'used' && vehicle.type !== 'used') return false;
-    if (selectedBrand && vehicle.brand !== selectedBrand) return false;
-    if (vehicle.price < priceRange[0] || vehicle.price > priceRange[1]) return false;
-    if (vehicle.range < rangeFilter[0] || vehicle.range > rangeFilter[1]) return false;
-    if (searchQuery && !vehicle.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !vehicle.brand.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  const newCarsCount = vehicles.filter(v => v.vehicleType === 'new').length;
+  const usedCarsCount = vehicles.filter(v => v.vehicleType === 'used').length;
 
-  const newCarsCount = sampleVehicles.filter(v => v.type === 'new').length;
-  const usedCarsCount = sampleVehicles.filter(v => v.type === 'used').length;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">加载中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -288,7 +233,7 @@ export default function VehiclesPage() {
           <VehicleTypeTab 
             active={activeTab === 'all'} 
             onClick={() => setActiveTab('all')}
-            count={sampleVehicles.length}
+            count={vehicles.length}
           >
             全部车辆
           </VehicleTypeTab>
@@ -449,6 +394,9 @@ export default function VehiclesPage() {
           </div>
         </div>
       </div>
+      
+      {/* 客服功能 */}
+      <CustomerService productType="vehicle" />
     </div>
   );
 }

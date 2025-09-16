@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { authManager } from '@/lib/auth';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,9 +24,27 @@ export default function LoginPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', formData);
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const result = await authManager.login(formData.email, formData.password);
+      
+      if (result.success) {
+        // 登录成功，跳转到个人中心
+        router.push('/profile');
+        router.refresh();
+      } else {
+        setError(result.error || '登录失败');
+      }
+    } catch (err) {
+      setError('登录过程中发生错误');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,6 +79,12 @@ export default function LoginPage() {
               <h1 className="text-3xl font-bold text-gray-900">用户登录</h1>
               <p className="mt-2 text-gray-600">欢迎回到EV Car Parts Global</p>
             </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -122,9 +151,10 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                disabled={isLoading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                登录
+                {isLoading ? '登录中...' : '登录'}
               </button>
             </form>
 
@@ -205,7 +235,7 @@ export default function LoginPage() {
                 <div className="mt-8 p-6 bg-white/10 rounded-lg backdrop-blur">
                   <h3 className="text-xl font-semibold mb-2">全球服务覆盖</h3>
                   <p className="text-white/90">
-                    服务东南亚、中东、俄罗斯等地区，连接全球新能源汽车市场
+                    服务全球新能源用户，连接世界各地的新能源汽车市场
                   </p>
                 </div>
               </div>
