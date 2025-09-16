@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon, PhotoIcon, FunnelIcon, HeartIcon, EyeIcon } from '
 import { HeartIcon as HeartSolidIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import Navigation from '../../components/Navigation';
 import CustomerService from '../../components/CustomerService';
+import { imageMap } from '../../lib/images';
 
 interface Vehicle {
   id: string;
@@ -38,7 +39,7 @@ const sampleVehicles: Vehicle[] = [
     type: 'new',
     price: 339900,
     range: 675,
-    images: ['/api/placeholder/400/250'],
+    images: [imageMap.vehicles['tesla-model3']],
     description: '全新Tesla Model 3高性能版，零百加速3.3秒，WLTP工况续航675公里',
     features: ['自动驾驶', '空气悬挂', '高性能制动', '碳纤维扰流板'],
     location: '上海',
@@ -56,7 +57,7 @@ const sampleVehicles: Vehicle[] = [
     price: 219000,
     originalPrice: 289800,
     range: 550,
-    images: ['/api/placeholder/400/250'],
+    images: [imageMap.vehicles['byd-han-ev']],
     description: '比亚迪汉EV创世版，刀片电池技术，车况极佳',
     features: ['刀片电池', 'DiPilot智能驾驶', 'Nappa真皮座椅', '丹拿音响'],
     mileage: 15000,
@@ -75,7 +76,7 @@ const sampleVehicles: Vehicle[] = [
     type: 'new',
     price: 448000,
     range: 930,
-    images: ['/api/placeholder/400/250'],
+    images: [imageMap.vehicles['nio-et7']],
     description: '蔚来ET7首发版，150kWh固态电池，CLTC续航930公里',
     features: ['固态电池', 'NAD自动驾驶', '空气悬挂', '女王副驾'],
     location: '合肥',
@@ -93,7 +94,7 @@ const sampleVehicles: Vehicle[] = [
     price: 185000,
     originalPrice: 249900,
     range: 480,
-    images: ['/api/placeholder/400/250'],
+    images: [imageMap.vehicles['xpeng-p7']],
     description: '小鹏P7鹏翼版，NGP高速自动驾驶，个人一手车',
     features: ['NGP自动驾驶', '鹏翼门', '丹拿音响', '哨兵模式'],
     mileage: 28000,

@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon, PhotoIcon, FunnelIcon, AdjustmentsHorizontalIcon }
 import { HeartIcon } from '@heroicons/react/24/solid';
 import Navigation from '../../components/Navigation';
 import CustomerService from '../../components/CustomerService';
+import { imageMap } from '../../lib/images';
 
 interface Part {
   id: string;
@@ -33,7 +34,7 @@ const sampleParts: Part[] = [
     quality: 'original',
     retailPrice: 15000,
     wholesalePrice: 12000,
-    images: ['/api/placeholder/300/200'],
+    images: [imageMap.parts['battery-pack']],
     description: '高效电池包冷却系统，确保电池温度控制',
     inStock: true,
     location: '中国深圳'
@@ -47,7 +48,7 @@ const sampleParts: Part[] = [
     quality: 'oem',
     retailPrice: 2800,
     wholesalePrice: 2200,
-    images: ['/api/placeholder/300/200'],
+    images: [imageMap.parts['charging-gun']],
     description: '快速充电口模块，支持DC快充',
     inStock: true,
     location: '中国比亚迪'
@@ -60,7 +61,7 @@ const sampleParts: Part[] = [
     vehicleModels: ['ET7', 'ES8'],
     quality: 'aftermarket',
     retailPrice: 8500,
-    images: ['/api/placeholder/300/200'],
+    images: [imageMap.parts['motor-controller']],
     description: '高性能电机控制器，优化动力输出',
     inStock: false,
     location: '中国上海'

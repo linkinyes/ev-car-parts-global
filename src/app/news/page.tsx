@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { MagnifyingGlassIcon, PlayIcon, ClockIcon, EyeIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { FireIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import Navigation from '../../components/Navigation';
+import { imageMap } from '../../lib/images';
 
 interface NewsArticle {
   id: string;
@@ -37,7 +38,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 5,
     views: 15420,
     comments: 234,
-    image: '/api/placeholder/600/300',
+    image: imageMap.news['tesla-battery-tech'],
     isHot: true,
     tags: ['比亚迪', '刀片电池', '技术突破']
   },
@@ -53,7 +54,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 8,
     views: 28750,
     comments: 567,
-    image: '/api/placeholder/600/300',
+    image: imageMap.vehicles['tesla-model-y'],
     videoUrl: 'https://example.com/video1',
     isNew: true,
     tags: ['Tesla', 'Model Y', '新车发布']
@@ -70,7 +71,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 12,
     views: 19830,
     comments: 189,
-    image: '/api/placeholder/600/300',
+    image: imageMap.vehicles['nio-et7'],
     videoUrl: 'https://example.com/video2',
     tags: ['蔚来ET7', '宝马iX', '对比评测']
   },
@@ -86,7 +87,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 6,
     views: 12650,
     comments: 95,
-    image: '/api/placeholder/600/300',
+    image: imageMap.news['charging-infrastructure'],
     isHot: true,
     tags: ['充电桩', '基础设施', '政策']
   },
@@ -102,7 +103,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 4,
     views: 8950,
     comments: 76,
-    image: '/api/placeholder/600/300',
+    image: imageMap.vehicles['xpeng-g3'],
     tags: ['小鹏G9', '海外市场', '自动驾驶']
   },
   {
@@ -117,7 +118,7 @@ const sampleNews: NewsArticle[] = [
     readTime: 10,
     views: 7320,
     comments: 158,
-    image: '/api/placeholder/600/300',
+    image: imageMap.vehicles['li-l9'],
     tags: ['理想L9', '用车体验', '车主分享']
   }
 ];

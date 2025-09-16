@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import Navigation from '../components/Navigation';
+import { imageMap } from '../lib/images';
 
 export default function Home() {
 
@@ -55,11 +56,11 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">热门零件</h3>
               {[
-                { title: '电池组', price: '￥1,299', image: '/api/placeholder/200/200', discount: '8.5折' },
-                { title: '电机控制器', price: '￥899', image: '/api/placeholder/200/150' },
-                { title: '充电枪', price: '￥299', image: '/api/placeholder/200/180', hot: true },
-                { title: '电控系统', price: '￥2,199', image: '/api/placeholder/200/220' },
-                { title: '驱动电机', price: '￥3,999', image: '/api/placeholder/200/160', discount: '9折' }
+                { title: '电池组', price: '￥1,299', image: imageMap.parts['battery-pack'], discount: '8.5折' },
+                { title: '电机控制器', price: '￥899', image: imageMap.parts['motor-controller'] },
+                { title: '充电枪', price: '￥299', image: imageMap.parts['charging-gun'], hot: true },
+                { title: '电控系统', price: '￥2,199', image: imageMap.parts['control-system'] },
+                { title: '驱动电机', price: '￥3,999', image: imageMap.parts['drive-motor'], discount: '9折' }
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative">
@@ -87,11 +88,11 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">精选配件</h3>
               {[
-                { title: 'BMS管理系统', price: '￥799', image: '/api/placeholder/200/180' },
-                { title: '车载充电器', price: '￥499', image: '/api/placeholder/200/200', hot: true },
-                { title: '电机控制器', price: '￥1,599', image: '/api/placeholder/200/160' },
-                { title: '高压电缆', price: '￥199', image: '/api/placeholder/200/140', discount: '7.5折' },
-                { title: '热管理系统', price: '￥1,299', image: '/api/placeholder/200/190' }
+                { title: 'BMS管理系统', price: '￥799', image: imageMap.parts['bms-system'] },
+                { title: '车载充电器', price: '￥499', image: imageMap.parts['onboard-charger'], hot: true },
+                { title: '电机控制器', price: '￥1,599', image: imageMap.parts['motor-controller'] },
+                { title: '高压电缆', price: '￥199', image: imageMap.parts['high-voltage-cable'], discount: '7.5折' },
+                { title: '热管理系统', price: '￥1,299', image: imageMap.parts['thermal-management'] }
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative">
@@ -119,11 +120,11 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">热门车型</h3>
               {[
-                { title: 'Tesla Model 3', price: '￥29.9万', image: '/api/placeholder/200/120', type: '新车' },
-                { title: '比亚迪汉EV', price: '￥18.5万', image: '/api/placeholder/200/140', type: '二手' },
-                { title: '蔡来ET7', price: '￥32.8万', image: '/api/placeholder/200/130', type: '新车', hot: true },
-                { title: '小鹏P7', price: '￥25.2万', image: '/api/placeholder/200/125', type: '二手' },
-                { title: '理想L9', price: '￥45.9万', image: '/api/placeholder/200/135', type: '新车' }
+                { title: 'Tesla Model 3', price: '￥29.9万', image: imageMap.vehicles['tesla-model3'], type: '新车' },
+                { title: '比亚迪汉EV', price: '￥18.5万', image: imageMap.vehicles['byd-han-ev'], type: '二手' },
+                { title: '蔚来ET7', price: '￥32.8万', image: imageMap.vehicles['nio-et7'], type: '新车', hot: true },
+                { title: '小鹏P7', price: '￥25.2万', image: imageMap.vehicles['xpeng-p7'], type: '二手' },
+                { title: '理想L9', price: '￥45.9万', image: imageMap.vehicles['li-l9'], type: '新车' }
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative">
@@ -151,11 +152,11 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">精选车源</h3>
               {[
-                { title: '极氪001', price: '￥28.6万', image: '/api/placeholder/200/125', type: '新车' },
-                { title: 'Model Y', price: '￥33.9万', image: '/api/placeholder/200/130', type: '新车', hot: true },
-                { title: '砂州G3', price: '￥15.8万', image: '/api/placeholder/200/120', type: '二手' },
-                { title: '哪吒GT', price: '￥35.8万', image: '/api/placeholder/200/140', type: '新车' },
-                { title: '品牌E-HS9', price: '￥41.2万', image: '/api/placeholder/200/135', type: '二手' }
+                { title: '极氪001', price: '￥28.6万', image: imageMap.vehicles['zeekr-001'], type: '新车' },
+                { title: 'Model Y', price: '￥33.9万', image: imageMap.vehicles['tesla-model-y'], type: '新车', hot: true },
+                { title: '小鹏G3', price: '￥15.8万', image: imageMap.vehicles['xpeng-g3'], type: '二手' },
+                { title: '哪吒GT', price: '￥35.8万', image: imageMap.vehicles['neta-gt'], type: '新车' },
+                { title: '红旗E-HS9', price: '￥41.2万', image: imageMap.vehicles['hongqi-ehs9'], type: '二手' }
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative">
@@ -183,11 +184,11 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 text-center mb-3">EV 资讯</h3>
               {[
-                { title: '2024年电动汽车市场分析报告', image: '/api/placeholder/200/120', time: '2小时前', views: '2.1k' },
-                { title: '特斯拉新技术突破：电池续航提升30%', image: '/api/placeholder/200/140', time: '5小时前', views: '3.8k', hot: true },
-                { title: '中国新能源汽车出口量再创新高', image: '/api/placeholder/200/130', time: '8小时前', views: '1.5k' },
-                { title: '充电基础设施建设的最新进展', image: '/api/placeholder/200/125', time: '12小时前', views: '982' },
-                { title: 'EV维修保养指南：如何延长电池寿命', image: '/api/placeholder/200/135', time: '1天前', views: '2.3k' }
+                { title: '2024年电动汽车市场分析报告', image: imageMap.news['ev-market-2024'], time: '2小时前', views: '2.1k' },
+                { title: '特斯拉新技术突破：电池续航提升30%', image: imageMap.news['tesla-battery-tech'], time: '5小时前', views: '3.8k', hot: true },
+                { title: '中国新能源汽车出口量再创新高', image: imageMap.news['china-ev-export'], time: '8小时前', views: '1.5k' },
+                { title: '充电基础设施建设的最新进展', image: imageMap.news['charging-infrastructure'], time: '12小时前', views: '982' },
+                { title: 'EV维修保养指南：如何延长电池寿命', image: imageMap.news['ev-maintenance-guide'], time: '1天前', views: '2.3k' }
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative">
