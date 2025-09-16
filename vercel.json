@@ -4,7 +4,6 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "regions": ["hkg1", "sin1", "nrt1"],
   "functions": {
     "app/**/*.tsx": {
       "maxDuration": 60
